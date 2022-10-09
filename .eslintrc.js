@@ -1,14 +1,11 @@
 module.exports = {
-  extends: 'react-app',
+  extends: 'storage-sock',
 
   parser: '@typescript-eslint/parser',
 
   plugins: ['@typescript-eslint'],
 
   settings: {
-    react: {
-      version: '17'
-    },
     'import/parsers': {
       '@typescript-eslint/parser': ['.ts', '.tsx']
     },

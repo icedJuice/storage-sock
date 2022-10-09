@@ -1,16 +1,16 @@
 import _createClass from '@babel/runtime/helpers/esm/createClass';
 
 /** 消息类型： 链接消息 */
-var MSG_TYPE_CONNECT = 0xaae61;
+var MSG_TYPE_CONNECT = 0x1001;
 /** 消息类型： 数据发送消息 */
 
-var MSG_TYPE_IO = 0xaae62;
+var MSG_TYPE_IO = 0x1002;
 /** localstorage 存储的键名 */
 
-var __STORAGE_BRIDGE_KEY__ = '__soc_birdge_key__';
+var __STORAGE_BRIDGE_KEY__ = "__preview_soc_birdge_key__";
 
-var StorageSock = /*#__PURE__*/function () {
-  function StorageSock() {
+var PreviewSoc = /*#__PURE__*/function () {
+  function PreviewSoc() {
     var _this = this;
 
     this._id = void 0;
@@ -23,9 +23,9 @@ var StorageSock = /*#__PURE__*/function () {
         return;
       }
 
-      var message = JSON.parse(e.newValue || '{}');
+      var message = JSON.parse(e.newValue || "");
 
-      if (_this._id && (message == null ? void 0 : message.id) === _this._id) {
+      if (!_this._id || (message == null ? void 0 : message.id) !== _this._id) {
         return;
       }
 
@@ -48,34 +48,31 @@ var StorageSock = /*#__PURE__*/function () {
       }
     };
 
-    this.setData = function (type, data) {
+    this.sendMessage = function (data) {
+      _this._prevData = data;
       window.localStorage.setItem(__STORAGE_BRIDGE_KEY__, JSON.stringify({
         id: _this._id,
-        type: type,
+        type: MSG_TYPE_IO,
         data: data
       }));
     };
 
-    this.sendMessage = function (data) {
-      _this._prevData = data;
-
-      _this.setData(MSG_TYPE_IO, data);
-    };
-
     this.bind = function (id) {
-      _this._id = id; // 避免误操作多次绑定
-
+      _this._id = id;
       window.removeEventListener("storage", _this._messageReceiver, false);
       window.addEventListener("storage", _this._messageReceiver, false);
     };
 
     this.ready = function () {
       if (!_this._id) {
-        console.error('ready failed. you need bind id first, use: soc.bind(id as your id)');
+        console.log("%c ready failed. you need bind id first, use: soc.bind(id as your id)", "background: red");
         return;
       }
 
-      _this.setData(MSG_TYPE_CONNECT);
+      window.localStorage.setItem(__STORAGE_BRIDGE_KEY__, JSON.stringify({
+        id: _this._id,
+        type: MSG_TYPE_CONNECT
+      }));
     };
 
     this.destory = function () {
@@ -89,7 +86,7 @@ var StorageSock = /*#__PURE__*/function () {
     this._prevData = null;
   }
 
-  _createClass(StorageSock, [{
+  _createClass(PreviewSoc, [{
     key: "onMessage",
     get: function get() {
       return this._onMessage;
@@ -107,7 +104,7 @@ var StorageSock = /*#__PURE__*/function () {
     }
   }]);
 
-  return StorageSock;
+  return PreviewSoc;
 }();
 
-export { StorageSock as default };
+export { PreviewSoc as default };
